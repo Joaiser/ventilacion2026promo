@@ -34,7 +34,8 @@ class Ventilacion2026PromoVENTILACION2026PROMOModuleFrontController extends Modu
       'modules/ventilacion2026promo/views/js/ventilacion2026promo.js',
       [
         'position' => 'bottom',
-        'priority' => 200
+        'priority' => 200,
+        'attributes' => 'type="module"',
       ]
     );
 

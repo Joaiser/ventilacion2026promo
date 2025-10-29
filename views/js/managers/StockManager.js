@@ -1,0 +1,129 @@
+export class StockManager {
+  constructor(config) {
+    this.config = config;
+  }
+
+  /**
+   * Verificar stock via AJAX
+   */
+  async checkStock(productId, combinationId, quantity = 1) {
+    try {
+      console.log(`🔍 Verificando stock: Producto ${productId}, Comb ${combinationId}, Qty ${quantity}`);
+
+      const params = new URLSearchParams({
+        action: 'checkStock',
+        productId: productId,
+        combinationId: combinationId,
+        quantity: quantity,
+        token: this.config.static_token
+      });
+
+      const response = await fetch(this.config.promoAjaxUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: params
+      });
+
+      console.log('📡 Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('📦 Data recibida:', data);
+
+      if (!data.success) {
+        console.error('❌ Error en checkStock:', data.message);
+        // Por seguridad, devolver disponible si hay error en la respuesta
+        return {
+          available: true,
+          stock: 999,
+          message: 'Error verificando disponibilidad - asumiendo disponible'
+        };
+      }
+
+      return data.stock;
+
+    } catch (error) {
+      console.error('❌ Error en checkStock:', error);
+      // Por seguridad, devolver disponible si hay error de conexión
+      return {
+        available: true,
+        stock: 999,
+        message: 'Error de conexión - asumiendo disponible'
+      };
+    }
+  }
+
+  /**
+   * Mostrar mensaje de error - AHORA CON TOAST
+   * NOTA: Esta función necesita ToastManager, así que la manejaremos diferente
+   */
+  showStockMessage(stockInfo, productName = '') {
+    console.log('🔄 Mostrando mensaje toast de stock:', stockInfo);
+
+    if (!stockInfo.available) {
+      const message = productName
+        ? `<strong>${productName}</strong>: ${stockInfo.message}`
+        : stockInfo.message;
+
+      // Aquí necesitamos ToastManager - lo manejaremos después
+      showToast(message, 'warning');
+      console.log('📢 Toast (pendiente):', message);
+    }
+  }
+
+  /**
+   * Limpiar mensajes de stock - AHORA SOLO DESBLOQUEA BOTONES
+   */
+  clearStockMessage(card) {
+    // Solo nos encargamos de rehabilitar botones
+    const plusBtn = card.querySelector('.plus-btn');
+    if (plusBtn && plusBtn.disabled) {
+      const hasCombinations = card.querySelector('.combination-select') !== null;
+      // currentSelections vendrá del StateManager
+      // const currentCombinationId = currentSelections[card.dataset.id];
+
+      // Habilitar si hay combinacion seleccionada
+      // if (!hasCombinations || (hasCombinations && currentCombinationId && currentCombinationId > 0)) {
+      //   plusBtn.disabled = false;
+      //   plusBtn.classList.remove('btn-secondary');
+      //   plusBtn.classList.add('btn-primary');
+      // }
+    }
+  }
+
+  /**
+   * Muestra advertencias de stock desde el cálculo total
+   */
+  showStockWarnings(data) {
+    if (data.has_stock_issues && data.out_of_stock_products) {
+      console.warn('⚠️ Productos sin stock:', data.out_of_stock_products);
+
+      // Mostrar toast por cada producto sin stock
+      data.out_of_stock_products.forEach(product => {
+        const key = product.id + '_' + product.id_product_attribute;
+        const stockInfo = data.stock_validation[key];
+        if (stockInfo) {
+          // Obtener nombre del producto
+          const card = document.querySelector(`.mini-card[data-id="${product.id}"]`);
+          const productName = card ? card.querySelector('h5 a')?.textContent?.trim() : 'Producto';
+
+          this.showStockMessage(stockInfo, productName);
+        }
+      });
+
+      // Toast general resumen
+      if (data.out_of_stock_count > 0) {
+        setTimeout(() => {
+          showToast(`${data.out_of_stock_count} producto(s) sin stock disponible no se incluirán en el cálculo.`, 'info');
+          console.log('📢 Toast general (pendiente)');
+        }, 500);
+      }
+    }
+  }
+}
