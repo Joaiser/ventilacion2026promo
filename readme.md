@@ -2,6 +2,7 @@
 
 Este repositorio contiene el proyecto **ventilacion2026promo**, desarrollado por [Joaiser](https://github.com/Joaiser). El objetivo principal de este software es gestionar y promocionar productos relacionados con la ventilación, integrándose en plataformas como PrestaShop.
 
+Es un módulo hecho a medida para una empresa.
 ---
 
 ## Estructura de archivos
