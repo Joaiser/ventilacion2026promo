@@ -1,0 +1,213 @@
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mini-card {
+  width: 100%;
+  margin: 5px auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  text-align: center;
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
+.mini-card:hover {
+  transform: scale(1.05);
+}
+
+.mini-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.mini-card .card-body {
+  padding: 6px;
+}
+
+.mini-card h5 {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.mini-card p {
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+
+.mini-card .controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-card button {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+}
+
+.mini-card .qty {
+  font-size: 0.75rem;
+  width: 22px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Selector de combinaciones */
+.combination-selector {
+  margin: 4px 0;
+  font-size: 0.65rem;
+}
+
+.combination-selector select {
+  width: 100%;
+  font-size: 0.65rem;
+  padding: 2px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.combination-price {
+  font-size: 0.6rem;
+  color: #28a745;
+  margin-top: 2px;
+}
+
+/* ===== FIXED BAR ===== */
+.budget-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #000;
+  color: white;
+  padding: 10px 20px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 9999;
+  font-size: 1rem;
+}
+
+.budget-progress {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.budget-progress-bar {
+  height: 100%;
+  background: #fff;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.budget-exceeded {
+  background: #dc3545 !important;
+}
+
+.budget-reached {
+  background: #28a745 !important;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.add-to-cart-btn {
+  display: none;
+  margin-top: 15px;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(44, 62, 80, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-to-cart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.6);
+  background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+}
+
+.add-to-cart-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(44, 62, 80, 0.3);
+}
+
+.add-to-cart-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%);
+}
+
+.add-to-cart-btn:active::after {
+  width: 100%;
+  height: 100%;
+  transition: 0s;
+}
+
+/* Efecto de pulso en negro/gris */
+@keyframes pulse-dark {
+  0% {
+    box-shadow: 0 0 0 0 rgba(44, 62, 80, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(44, 62, 80, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(44, 62, 80, 0);
+  }
+}
+
+.add-to-cart-btn {
+  animation: pulse-dark 2s infinite;
+}
+
+.budget-status {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.stock-message {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.stock-message .material-icons {
+  font-size: 14px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
