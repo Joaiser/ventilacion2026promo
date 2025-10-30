@@ -24,7 +24,7 @@
       </a>
       <div class="card-body">
         <h5><a href="{$product.link}" class="text-dark text-decoration-none">
-            {$product.name|truncate:20}
+            {$product.name}
           </a></h5>
         <p class="fw-bold text-primary mb-1">{$product.price}</p>
 

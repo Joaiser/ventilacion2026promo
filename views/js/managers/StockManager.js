@@ -86,22 +86,24 @@ export class StockManager {
   }
 
   /**
-   * Limpiar mensajes de stock - AHORA SOLO DESBLOQUEA BOTONES
+   * Limpiar mensajes de stock - REHABILITAR BOTONES CUANDO HAY STOCK
    */
-  clearStockMessage(card) {
-    // Solo nos encargamos de rehabilitar botones
+  clearStockMessage(card, stateManager) {
     const plusBtn = card.querySelector('.plus-btn');
     if (plusBtn && plusBtn.disabled) {
       const hasCombinations = card.querySelector('.combination-select') !== null;
-      // currentSelections vendrá del StateManager
-      // const currentCombinationId = currentSelections[card.dataset.id];
+      const productId = card.dataset.id;
+      const currentCombinationId = stateManager.getSelectedCombination(productId);
 
-      // Habilitar si hay combinacion seleccionada
-      // if (!hasCombinations || (hasCombinations && currentCombinationId && currentCombinationId > 0)) {
-      //   plusBtn.disabled = false;
-      //   plusBtn.classList.remove('btn-secondary');
-      //   plusBtn.classList.add('btn-primary');
-      // }
+      // Habilitar si:
+      // - No tiene combinaciones O 
+      // - Tiene combinaciones y una está seleccionada
+      if (!hasCombinations || (hasCombinations && currentCombinationId && currentCombinationId > 0)) {
+        plusBtn.disabled = false;
+        plusBtn.classList.remove('btn-secondary');
+        plusBtn.classList.add('btn-primary');
+        console.log('✅ Botón rehabilitado para producto:', productId);
+      }
     }
   }
 
