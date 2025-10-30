@@ -88,22 +88,23 @@ export class StockManager {
   /**
    * Limpiar mensajes de stock - REHABILITAR BOTONES CUANDO HAY STOCK
    */
-  clearStockMessage(card, stateManager) {
+  /**
+ * Limpiar mensajes de stock - REHABILITAR BOTONES CUANDO HAY STOCK
+ */
+  clearStockMessage(card) {
     const plusBtn = card.querySelector('.plus-btn');
     if (plusBtn && plusBtn.disabled) {
       const hasCombinations = card.querySelector('.combination-select') !== null;
-      const productId = card.dataset.id;
-      const currentCombinationId = stateManager.getSelectedCombination(productId);
 
-      // Habilitar si:
-      // - No tiene combinaciones O 
-      // - Tiene combinaciones y una está seleccionada
-      if (!hasCombinations || (hasCombinations && currentCombinationId && currentCombinationId > 0)) {
+      // Si no tiene combinaciones, habilitar directamente
+      if (!hasCombinations) {
         plusBtn.disabled = false;
         plusBtn.classList.remove('btn-secondary');
         plusBtn.classList.add('btn-primary');
-        console.log('✅ Botón rehabilitado para producto:', productId);
+        console.log('✅ Botón rehabilitado para producto sin combinaciones');
       }
+      // Si tiene combinaciones, el botón se habilita cuando se selecciona una combinación
+      // (eso se maneja en otro lugar)
     }
   }
 
