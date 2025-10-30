@@ -17,8 +17,10 @@
   {if $products|@count > 0}
   <div class="mini-grid">
     {foreach from=$products item=product}
-    <div class="mini-card shadow-sm" data-price="{$product.price_raw}" data-id="{$product.id}" data-qty="0"
-      data-reference="{$product.reference}">
+    <div class="mini-card shadow-sm" data-id="{$product.id}" data-product-id="{$product.id}"
+      data-product-name="{$product.name|escape:'html'}" data-product-ref="{$product.reference}"
+      data-price="{$product.price_raw}" data-qty="0">
+
       <a href="{$product.link}">
         <img src="{$product.image}" alt="{$product.name}">
       </a>
@@ -75,6 +77,35 @@
     </button>
   </div>
 </div>
+
+<!-- ===== LOADER SPINNER ===== -->
+<div id="fan-loader" style="
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+">
+  <img src="{$urls.base_url}modules/ventilacion2026promo/assets/image-removebg-preview.png" alt="Cargando..."
+    style="width: 120px; height: 120px; animation: spin 1.5s linear infinite;">
+  <p style="margin-top:10px; font-weight:600; color:#333;">Añadiendo productos...</p>
+</div>
+
+<style>
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
 
 {else}
 <div class="container my-5 text-center">

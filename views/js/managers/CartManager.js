@@ -16,21 +16,26 @@ export class CartManager {
     console.log('🛒 Iniciando añadir al carrito...');
     console.log('selectedCombinations:', this.state.selectedCombinations);
 
-    // Recopilar TODAS las combinaciones con cantidad > 0
+    // Recopilar todas las combinaciones con cantidad > 0
     for (const productId in this.state.selectedCombinations) {
       for (const combinationId in this.state.selectedCombinations[productId]) {
         const item = this.state.selectedCombinations[productId][combinationId];
         console.log(`📦 Verificando: Producto ${productId}, Comb ${combinationId}, Cantidad: ${item.quantity}, Precio: ${item.price}`);
 
         if (item.quantity > 0 && item.price > 0) {
+          const el = document.querySelector(`[data-id="${productId}"]`);
+          const name = el?.dataset.productName || item.name || `Producto ${productId}`;
+          const reference = el?.dataset.productRef || item.reference || '';
+
           productsToAdd.push({
             id: parseInt(productId),
             quantity: item.quantity,
             id_product_attribute: parseInt(combinationId),
-            name: item.name || `Producto ${productId}`,
-            reference: item.reference || ''
+            name,
+            reference
           });
-          console.log(`✅ Añadido: ${item.name || 'Producto ' + productId}, Ref: ${item.reference || '—'}`);
+
+          console.log(`✅ Añadido: ${name} (Ref: ${reference || '—'}) x${item.quantity}`);
         }
       }
     }
@@ -40,26 +45,31 @@ export class CartManager {
       return;
     }
 
-    // Mostrar modal de confirmación (solo nombres + referencias)
     const modalContent = `
-    <h3 style="margin-bottom:10px;">Confirmar productos</h3>
-    <p>Vas a añadir al carrito:</p>
-    <ul style="list-style:none; padding-left:0; margin:10px 0;">
-      ${productsToAdd.map(p => `
-        <li style="margin:4px 0;">🛍️ <strong>${p.name}</strong> 
-          ${p.reference ? `<span style="color:#666;">(Ref: ${p.reference})</span>` : ''}
-          — Cant: <strong>${p.quantity}</strong>
-        </li>
-      `).join('')}
-    </ul>
-    <p style="font-weight:bold; margin-top:10px;">Total: ${this.state.currentBudget.toFixed(2)} €</p>
-  `;
+      <h3 style="margin-bottom:10px;">Confirmar productos</h3>
+      <p>Vas a añadir al carrito:</p>
+      <ul style="list-style:none; padding-left:0; margin:10px 0;">
+        ${productsToAdd.map(p => `
+          <li style="margin:4px 0;">🛍️ <strong>${p.name}</strong> 
+            ${p.reference ? `<span style="color:#666;">(Ref: ${p.reference})</span>` : ''}
+            — Cant: <strong>${p.quantity}</strong>
+          </li>
+        `).join('')}
+      </ul>
+      <p style="font-weight:bold; margin-top:10px;">Total: ${this.state.currentBudget.toFixed(2)} €</p>
+    `;
 
+    // Mostrar modal
     this.showConfirmModal(modalContent, () => {
+      const loader = document.getElementById('fan-loader');
+      if (loader) loader.style.display = 'flex'; // Mostrar ventilador
+
       this.elements.addToCartBtn.disabled = true;
       this.elements.addToCartBtn.textContent = 'Añadiendo...';
       this.state.validNavigation = true;
-      this.addProductsToCart(productsToAdd, 0);
+
+      // Pasamos loader a addProductsToCart
+      this.addProductsToCart(productsToAdd, 0, loader);
     });
   }
 
@@ -154,9 +164,11 @@ export class CartManager {
 
 
 
-  addProductsToCart(products, index) {
+  // Método de clase separado: addProductsToCart
+  addProductsToCart(products, index, loader) {
     if (index >= products.length) {
       this.forcePromoGroup().then(() => {
+        if (loader) loader.style.display = 'none'; // Ocultar ventilador al final
         this.toast.show('¡Productos añadidos al carrito correctamente!', 'success');
         setTimeout(() => {
           window.location.href = this.config.orderUrl;
@@ -177,10 +189,9 @@ export class CartManager {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body
-    })
-      .finally(() => {
-        this.addProductsToCart(products, index + 1);
-      });
+    }).finally(() => {
+      this.addProductsToCart(products, index + 1, loader);
+    });
   }
 
   async forcePromoGroup() {
