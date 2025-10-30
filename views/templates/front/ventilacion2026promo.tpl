@@ -4,6 +4,8 @@
 
 {if $customer.is_logged}
 
+<!-- <script type="module" src="{$urls.base_url}modules/ventilacion2026promo/views/js/ventilacion2026promo.js"></script> -->
+
 <div class="ventilacion-promo-page container my-5" data-order-url="{$urls.pages.order}"
   data-ajax-url="{$urls.pages.cart}" data-static-token="{$static_token}"
   data-restore-group-url="{$link->getModuleLink('ventilacion2026promo', 'updategroup', ['action' => 'restore'], true)}"

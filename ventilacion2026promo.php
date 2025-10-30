@@ -46,7 +46,7 @@ class Ventilacion2026Promo extends Module
     return parent::install()
       && $this->registerHook('actionCartSave')
       && $this->registerHook('actionValidateOrder')
-      // && $this->registerHook('actionFrontControllerSetMedia') ->ver como usar este
+      && $this->registerHook('actionFrontControllerSetMedia')
       && $this->registerHook('displayHeader')
       && $this->databaseManager->createLastGroupTable();
   }
@@ -149,43 +149,47 @@ class Ventilacion2026Promo extends Module
   /**
    * ✅ MODIFICADO: Restaurar grupo SOLO cuando el cliente sale a páginas no críticas
    */
-  // function hookActionFrontControllerSetMedia($params)
-  // {
-  //   $controller = $this->context->controller;
-  //   $customer = $this->context->customer; // ✅ COMPLETAR
+  function hookActionFrontControllerSetMedia($params)
+  {
+    error_log("🎯 HOOK EJECUTADO: actionFrontControllerSetMedia para módulo " . $this->name);
 
-  //   // Lista de páginas donde NO debe restaurar el grupo (flujo de compra crítico)
-  //   $protectedPages = [
-  //     'order', // checkout
-  //     'cart', // carrito
-  //     'authentication', // login
-  //     'order-opc', // checkout one-page
-  //     'module-ventilacion2026promo-preview', // si tienes preview del módulo
-  //     'VENTILACION2026PROMO' // tu página promocional
-  //   ];
+    $this->context->controller->addJquery();
 
-  //   $currentPage = $controller->php_self; // ✅ COMPLETAR
+    // ✅ SIMPLIFICAR: Solo usar addJsDef
+    $baseUrl = $this->context->link->getBaseLink() . 'modules/ventilacion2026promo/views/js/';
 
-  //   // Si está en una página protegida, NO restaurar
-  //   if (in_array($currentPage, $protectedPages)) {
-  //     return;
-  //   }
+    $jsVars = [
+      'ventilacionPromoVars' => [
+        'baseUrl' => $baseUrl,
+        'moduleUrl' => $this->_path,
+        'ajaxUrl' => $this->context->link->getModuleLink($this->name, 'ajax'),
+        'staticToken' => Tools::getToken(false)
+      ]
+    ];
 
-  //   // Solo restaurar si está en otras páginas (home, categorías, producto, etc.)
-  //   if ($customer && $customer->id) {
-  //     $currentGroup = $this->groupManager->getCustomerDefaultGroup($customer->id);
-  //     $lastGroup = $this->databaseManager->getLastGroup($customer->id); // ✅ COMPLETAR
+    error_log("🎯 JS VARS - BaseUrl: " . $baseUrl);
+    Media::addJsDef($jsVars);
 
-  //     // Si está en un grupo promocional pero debería estar en su grupo original
-  //     $isInPromoGroup = in_array($currentGroup, [Constants::PROMO_GROUP_ID, Constants::PROMO_GROUP_ID_71]);
-  //     $hasOriginalGroup = $lastGroup && $lastGroup != $currentGroup; // ✅ COMPLETAR
+    // Registrar CSS
+    $this->context->controller->registerStylesheet(
+      'module-ventilacion2026promo-style',
+      'modules/' . $this->name . '/views/css/ventilacion2026promo.css',
+      ['media' => 'all', 'priority' => 150]
+    );
 
-  //     if ($isInPromoGroup && $hasOriginalGroup) {
-  //       Logger::log("🔄 Cliente {$customer->id} salió a página {$currentPage} - Restaurando grupo {$lastGroup}");
-  //       $this->groupManager->restoreOriginalGroup($customer, $lastGroup, 0);
-  //     }
-  //   }
-  // }
+    // ✅ CAMBIAR: Usar 'defer' en lugar de 'module' temporalmente
+    $this->context->controller->registerJavascript(
+      'module-ventilacion2026promo-script',
+      'modules/' . $this->name . '/views/js/ventilacion2026promo.js',
+      [
+        'position' => 'bottom',
+        'priority' => 150,
+        'attributes' => 'defer' // ← Cambiar a defer
+      ]
+    );
+
+    error_log("🎯 HOOK COMPLETADO");
+  }
   /**
    * ✅ Procesar peticiones AJAX
    */

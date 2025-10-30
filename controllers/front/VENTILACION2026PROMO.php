@@ -22,33 +22,34 @@ class Ventilacion2026PromoVENTILACION2026PROMOModuleFrontController extends Modu
     $this->groupManager = new GroupManager($this->databaseManager);
   }
 
-  public function setMedia()
-  {
-    //// Logger::log('Ejecutando setMedia');
+  // public function setMedia()
+  // {
+  //   parent::setMedia();
 
-    parent::setMedia();
+  //   // ✅ Asegurar que jQuery se carga primero
+  //   $this->context->controller->addJquery();
 
-    // Registrar JavaScript
-    $this->registerJavascript(
-      'modules-ventilacion2026promo-js',
-      'modules/ventilacion2026promo/views/js/ventilacion2026promo.js',
-      [
-        'position' => 'bottom',
-        'priority' => 200,
-        'attributes' => 'type="module"',
-      ]
-    );
+  //   // // Registrar JavaScript como módulo
+  //   // $this->registerJavascript(
+  //   //   'modules-ventilacion2026promo-js',
+  //   //   'modules/ventilacion2026promo/views/js/ventilacion2026promo.js',
+  //   //   [
+  //   //     'position' => 'bottom',
+  //   //     'priority' => 200,
+  //   //     'attributes' => 'type="module"',
+  //   //   ]
+  //   // );
 
-    // Registrar CSS
-    $this->registerStylesheet(
-      'modules-ventilacion2026promo-css',
-      'modules/ventilacion2026promo/views/css/ventilacion2026promo.css',
-      [
-        'media' => 'all',
-        'priority' => 200
-      ]
-    );
-  }
+  //   // Registrar CSS
+  //   $this->registerStylesheet(
+  //     'modules-ventilacion2026promo-css',
+  //     'modules/ventilacion2026promo/views/css/ventilacion2026promo.css',
+  //     [
+  //       'media' => 'all',
+  //       'priority' => 200
+  //     ]
+  //   );
+  // }
 
 
   public function initContent()

@@ -1,6 +1,12 @@
 export class StockManager {
   constructor(config) {
     this.config = config;
+    this.toastManager = null;
+  }
+
+  setToastManager(toastManager) {
+    this.toastManager = toastManager;
+    console.log('✅ StockManager: ToastManager establecido', this.toastManager);
   }
 
   /**
@@ -66,14 +72,16 @@ export class StockManager {
   showStockMessage(stockInfo, productName = '') {
     console.log('🔄 Mostrando mensaje toast de stock:', stockInfo);
 
-    if (!stockInfo.available) {
+    if (!stockInfo.available && this.toastManager) {
       const message = productName
         ? `<strong>${productName}</strong>: ${stockInfo.message}`
         : stockInfo.message;
 
-      // Aquí necesitamos ToastManager - lo manejaremos después
-      showToast(message, 'warning');
-      console.log('📢 Toast (pendiente):', message);
+      // Usar ToastManager
+      this.toastManager.show(message, 'warning');
+      console.log('📢 Toast mostrado:', message);
+    } else if (!stockInfo.available && !this.toastManager) {
+      console.warn('⚠️ ToastManager no disponible para mostrar mensaje:', stockInfo.message);
     }
   }
 
@@ -101,7 +109,7 @@ export class StockManager {
    * Muestra advertencias de stock desde el cálculo total
    */
   showStockWarnings(data) {
-    if (data.has_stock_issues && data.out_of_stock_products) {
+    if (data.has_stock_issues && data.out_of_stock_products && this.toastManager) {
       console.warn('⚠️ Productos sin stock:', data.out_of_stock_products);
 
       // Mostrar toast por cada producto sin stock
@@ -120,8 +128,8 @@ export class StockManager {
       // Toast general resumen
       if (data.out_of_stock_count > 0) {
         setTimeout(() => {
-          showToast(`${data.out_of_stock_count} producto(s) sin stock disponible no se incluirán en el cálculo.`, 'info');
-          console.log('📢 Toast general (pendiente)');
+          this.toastManager.show(`${data.out_of_stock_count} producto(s) sin stock disponible no se incluirán en el cálculo.`, 'info');
+          console.log('📢 Toast general mostrado');
         }, 500);
       }
     }
